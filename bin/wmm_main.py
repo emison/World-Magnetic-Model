@@ -28,20 +28,47 @@ def wmm_point ():
     if len(parameter_dict["P"]) != 4: #verify data was provided
         print("ERROR: incorrect number of arguments for specified option")
         return
-    lon = parameter_dict["P"][0]
-    lat = parameter_dict["P"][1]
+    lat = parameter_dict["P"][0]
+    lon = parameter_dict["P"][1]
     alt = parameter_dict["P"][2] #km from mean sea level
     date = parameter_dict["P"][3] #date in mm/dd/yyyy format
-    print("Input: \tsingle point")
-    print("Latitude: " + lon + " Deg N") #these lines arent necessary, since wmm_point.exe will print these entries
-    print("Longitude: " + lat + " Deg E")
-    print("Altitude: " + alt + " Km") #km from mean sea level
-    print("Date: " + date) #date in mm/dd/yyyy format
 
-    command_string = "./wmm_point.exe << EOF\nc\n" + lon + "\n" + lat + "\n" + alt + "\n" + date + "\n" +"n\nEOF\n" #use formatted string
+    command_string = "./wmm_point.exe << EOF\nc\n{0}\n{1}\n{2}\n{3}\nn\nEOF\n".format(lat, lon, alt, date)
     proc = subprocess.Popen(command_string,shell=True, stdout=subprocess.PIPE)
-    output_list = proc.stdout.readlines() #print lines starting at 'Results For'
-    print(output_list)
+    output_list = proc.stdout.readlines()
+    output_list = output_list[output_list.index(' Results For \n'):]
+    output_list=''.join(output_list).split()
+
+    #value, error, units
+    o = output_list
+    lat = [o[o.index('Latitude')+1][:-1], '',o[o.index('Latitude')+1][-1]]
+    lon = [o[o.index('Longitude')+1][:-1], '',o[o.index('Longitude')+1][-1]]
+    alt = [o[o.index('Altitude:')+1], '',' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
+    Date = [o[o.index('Date:')+1], '', '']
+    F = [float(o[o.index('F')+2]), float(o[o.index('F')+4]), o[o.index('F')+5]]
+    Fdot = [float(o[o.index('Fdot')+2]), 0,o[o.index('Fdot')+3]]
+    H = [float(o[o.index('H') + 2]), float(o[o.index('H') + 4]), o[o.index('H') + 5]]
+    Hdot = [float(o[o.index('Hdot')+2]), 0, o[o.index('Hdot')+3]]
+    X = [float(o[o.index('X')+2]), float(o[o.index('X')+4]), o[o.index('X')+5]]
+    Xdot = [float(o[o.index('Xdot')+2]), 0, o[o.index('Xdot')+3]]
+    Y = [float(o[o.index('Y')+2]), float(o[o.index('Y')+4]), o[o.index('Y')+5]]
+    Ydot = [float(o[o.index('Ydot')+2]), 0, o[o.index('Ydot')+3]]
+    Z = [float(o[o.index('Z')+2]), float(o[o.index('Z')+4]), o[o.index('Z')+5]]
+    Zdot = [float(o[o.index('Zdot')+2]), 0, o[o.index('Zdot')+3]]
+    Decl = [float(o[o.index('Decl')+2]) + float(o[o.index('Decl')+4])/60, float(o[o.index('Decl')+8])/60, o[o.index('Decl')+3] + " " + o[o.index('Decl')+6][1]]
+    Ddot = [float(o[o.index('Ddot')+2]), 0, o[o.index('Ddot')+3]]
+    Incl = [float(o[o.index('Incl')+2]) + float(o[o.index('Incl')+4])/60, float(o[o.index('Incl')+8])/60, o[o.index('Incl')+3] + " " + o[o.index('Incl')+6][1]]
+    Idot = [float(o[o.index('Idot')+2]), 0, o[o.index('Idot')+3]]
+
+    print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
+    print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],Date[0]))
+    print("\nMain Field\t\t\t\t\tSecular Change \nF\t= {0} +/- {1}\t{2}\t\tFdot\t= {3}\t{4}".format(F[0],F[1],F[2],Fdot[0],Fdot[2]))
+    print("H\t= {0} +/- {1}\t{2}\t\tHdot\t= {3}\t{4}".format(H[0],H[1],H[2],Hdot[0],Hdot[2]))
+    print("X\t= {0} +/- {1}\t{2}\t\tXdot\t= {3}\t{4}".format(X[0],X[1],X[2],Xdot[0],Xdot[2]))
+    print("Y\t= {0} +/- {1}\t{2}\t\tYdot\t= {3}\t{4}".format(Y[0],Y[1],Y[2],Ydot[0],Ydot[2]))
+    print("Z\t= {0} +/- {1}\t{2}\t\tZdot\t= {3}\t{4}".format(Z[0],Z[1],Z[2],Zdot[0],Zdot[2]))
+    print("Decl\t= {0} +/- {1}\t\t{2}\t\tDdot\t= {3}\t{4}".format(round(Decl[0],1),round(Decl[1],1),Decl[2],Ddot[0],Ddot[2]))
+    print("Incl\t= {0} +/- {1}\t\t{2}\t\tIdot\t= {3}\t{4} \n\nDone.\n".format(round(Incl[0],1),round(Incl[1],1),Incl[2],Idot[0],Idot[2]))
 
 
 def wmm_file ():
@@ -75,7 +102,7 @@ def parse_args ():
     for param in parameter_list:
         parameter_string += param + " " #add field delimiter
 
-    parameter_list = parameter_string.split("-") #spilt at record delimiter
+    parameter_list = parameter_string.split("--") #spilt at record delimiter
     parameter_list.pop(0)
 
     parameter_dict = {}
