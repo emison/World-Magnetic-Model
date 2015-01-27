@@ -5,10 +5,9 @@ import math
 
 #add functionality to export values from wmm_point for global use
 #make date input optional
-#add catch all solution for measurements solution
-#change "" to '' for input parameters
-#make separate function for parsing output
-#separate sections with formatting
+#add catch all solution for measurements parsing
+#change "" to '' for input parameters, and ignore case
+#add --V option to be verbose
 #WMM_MAIN
 #===============================================================================================================
 def main ():
@@ -117,11 +116,7 @@ def parse_args ():
     parameter_list = sys.argv
     file = parameter_list.pop(0)
 
-    parameter_string = ""
-    for param in parameter_list:
-        parameter_string += param + " " #add field delimiter
-
-    parameter_list = parameter_string.split("--") #spilt at record delimiter
+    parameter_list = ' '.join(parameter_list).split("--")
     parameter_list.pop(0)
 
     parameter_dict = {}
