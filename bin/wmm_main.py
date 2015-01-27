@@ -3,6 +3,14 @@ import sys
 import subprocess
 import math
 
+#add functionality to export values from wmm_point for global use
+#make date input optional
+#add catch all solution for measurements solution
+#change "" to '' for input parameters
+#make separate function for parsing output
+#separate sections with formatting
+#WMM_MAIN
+#===============================================================================================================
 def main ():
     option_list=["P","F","A", "U"]
     parse_args()
@@ -23,26 +31,28 @@ def main ():
     if "A" in parameter_dict:
         wmm_attitude()
 
-#add functionality to export values for global use
+
+#WMM_POINT
+#===============================================================================================================
 def wmm_point ():
-    if len(parameter_dict["P"]) != 4: #verify data was provided
+    #VERIFY CORRECT NUMBER OF PARAMETERS
+    if len(parameter_dict["P"]) != 4:
         print("ERROR: incorrect number of arguments for specified option")
         return
+
+    #GET ARGUMETS
     lat = parameter_dict["P"][0]
     lon = parameter_dict["P"][1]
-    alt = parameter_dict["P"][2] #km from mean sea level
-    date = parameter_dict["P"][3] #date in mm/dd/yyyy format
+    alt = parameter_dict["P"][2]
+    date = parameter_dict["P"][3]
 
+    #GET OUTPUT
     command_string = "./wmm_point.exe << EOF\nc\n{0}\n{1}\n{2}\n{3}\nn\nEOF\n".format(lat, lon, alt, date)
     proc = subprocess.Popen(command_string,shell=True, stdout=subprocess.PIPE)
     output_list = proc.stdout.readlines()
-    if "U" in parameter_dict:
-        print(''.join(output_list))
-    output_list = output_list[output_list.index(' Results For \n'):]
-    output_list=''.join(output_list).split()
 
-    #value, error, units
-    o = output_list
+    #PARSE OUTPUT AND STORE IN [VALUE, ERROR, UNITS] FORM
+    o = ''.join(output_list[output_list.index(' Results For \n'):]).split()
     lat = [o[o.index('Latitude')+1][:-1], '',o[o.index('Latitude')+1][-1]]
     lon = [o[o.index('Longitude')+1][:-1], '',o[o.index('Longitude')+1][-1]]
     alt = [o[o.index('Altitude:')+1], '',' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
@@ -62,7 +72,10 @@ def wmm_point ():
     Incl = [float(o[o.index('Incl')+2]) + float(o[o.index('Incl')+4])/60, float(o[o.index('Incl')+8])/60, o[o.index('Incl')+3] + " " + o[o.index('Incl')+6][1]]
     Idot = [float(o[o.index('Idot')+2]), 0, o[o.index('Idot')+3]]
 
-    if "P" in parameter_dict and "U" not in parameter_dict:
+    #PRINT OUTPUT WITH FORAMT UNALTERED IF --U OR ALTERED OTHERWISE
+    if "U" in parameter_dict:
+        print(''.join(output_list))
+    elif "P" in parameter_dict:
         print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
         print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],Date[0]))
         print("\nMain Field\t\t\t\t\tSecular Change \nF\t= {0} +/- {1}\t{2}\t\tFdot\t= {3}\t{4}".format(F[0],F[1],F[2],Fdot[0],Fdot[2]))
@@ -74,6 +87,8 @@ def wmm_point ():
         print("Incl\t= {0} +/- {1}\t\t{2}\t\tIdot\t= {3}\t{4} \n\nDone.\n".format(round(Incl[0],1),round(Incl[1],1),Incl[2],Idot[0],Idot[2]))
 
 
+#WMM_FILE
+#===============================================================================================================
 def wmm_file ():
     if len(parameter_dict["F"]) != 2: #verify data was provided
         print("ERROR: incorrect number of arguments for specified option")
@@ -95,7 +110,8 @@ def wmm_attitude (magnetometer_data,wmm_data):
     print("wmm_attitude")
 
 
-parameter_dict = {}
+#PARSE_ARGS
+#===============================================================================================================
 def parse_args ():
     global parameter_dict
     parameter_list = sys.argv
@@ -115,5 +131,7 @@ def parse_args ():
         parameter_dict[option] = param_list
         
 
+#DONE
+#===============================================================================================================
 if __name__=="__main__":
 	main()
