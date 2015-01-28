@@ -1,13 +1,14 @@
 #!/usr/bin/python
 import sys
 import subprocess
+import time
 import math
 
 #add functionality to export values from wmm_point for global use
 #make date input optional
 #add catch all solution for measurements parsing
-#change "" to '' for input parameters, and ignore case
 #add --V option to be verbose
+#make sure date given is in mm/dd/yyyy format
 #WMM_MAIN
 #===============================================================================================================
 def main ():
@@ -34,16 +35,20 @@ def main ():
 #WMM_POINT
 #===============================================================================================================
 def wmm_point ():
-    #VERIFY CORRECT NUMBER OF PARAMETERS
+    #VERIFY CORRECT NUMBER OF ARGUMENTS AND GET DATE, USING TODAYS DATE IF NOT PROVIDED
     if len(parameter_dict['P']) != 4:
-        print("ERROR: incorrect number of arguments for specified option")
-        return
+        if len(parameter_dict['P']) == 3:
+            date = time.strftime("%m/%d/%Y")
+        else:
+            print("ERROR: incorrect number of arguments for specified option")
+            return
+    else:
+        date = parameter_dict['P'][3]
 
-    #GET ARGUMETS
+    #GET POSITION
     lat = parameter_dict['P'][0]
     lon = parameter_dict['P'][1]
     alt = parameter_dict['P'][2]
-    date = parameter_dict['P'][3]
 
     #GET OUTPUT
     command_string = "./wmm_point.exe << EOF\nc\n{0}\n{1}\n{2}\n{3}\nn\nEOF\n".format(lat, lon, alt, date)
@@ -102,7 +107,9 @@ def wmm_file ():
     #print(command_string)
     #subprocess.Popen(command_string,shell=True)
 
-    
+
+#WMM_ATTITUDE
+#===============================================================================================================
 def wmm_attitude (magnetometer_data,wmm_data):
     #may be able to use common coordinate system for magnetometer and data (x,y,z)
     #sf + fe = se
