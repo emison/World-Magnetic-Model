@@ -11,7 +11,7 @@ import math
 #WMM_MAIN
 #===============================================================================================================
 def main ():
-    option_list=["P","F","A", "U"]
+    option_list=['P','F','A','U']
     parse_args()
 
     for option in parameter_dict:
@@ -19,15 +19,15 @@ def main ():
             print("ERROR: invalid option")
             return
 
-    if "P" in parameter_dict and "F" not in parameter_dict:
+    if 'P' in parameter_dict and 'F' not in parameter_dict:
         wmm_point()
-    elif "F" in parameter_dict and "P" not in parameter_dict:
+    elif 'F' in parameter_dict and 'P' not in parameter_dict:
         wmm_file()
     else:
         print("ERROR: specify either single point(-P) or file (-F) input")
         return
 
-    if "A" in parameter_dict:
+    if 'A' in parameter_dict:
         wmm_attitude()
 
 
@@ -35,15 +35,15 @@ def main ():
 #===============================================================================================================
 def wmm_point ():
     #VERIFY CORRECT NUMBER OF PARAMETERS
-    if len(parameter_dict["P"]) != 4:
+    if len(parameter_dict['P']) != 4:
         print("ERROR: incorrect number of arguments for specified option")
         return
 
     #GET ARGUMETS
-    lat = parameter_dict["P"][0]
-    lon = parameter_dict["P"][1]
-    alt = parameter_dict["P"][2]
-    date = parameter_dict["P"][3]
+    lat = parameter_dict['P'][0]
+    lon = parameter_dict['P'][1]
+    alt = parameter_dict['P'][2]
+    date = parameter_dict['P'][3]
 
     #GET OUTPUT
     command_string = "./wmm_point.exe << EOF\nc\n{0}\n{1}\n{2}\n{3}\nn\nEOF\n".format(lat, lon, alt, date)
@@ -89,14 +89,14 @@ def wmm_point ():
 #WMM_FILE
 #===============================================================================================================
 def wmm_file ():
-    if len(parameter_dict["F"]) != 2: #verify data was provided
+    if len(parameter_dict['F']) != 2: #verify data was provided
         print("ERROR: incorrect number of arguments for specified option")
         return
-    in_file = parameter_dict["F"][0]
-    out_file = parameter_dict["F"][1]
+    in_file = parameter_dict['F'][0]
+    out_file = parameter_dict['F'][1]
     print("Input: file")
-    print("Input file: " + parameter_dict["F"][0])
-    print("Output file: " + parameter_dict["F"][1])
+    print("Input file: " + parameter_dict['F'][0])
+    print("Output file: " + parameter_dict['F'][1])
 
     command_string = "./wmm_file.exe " + in_file + " " + out_file
     #print(command_string)
@@ -121,7 +121,7 @@ def parse_args ():
 
     parameter_dict = {}
     for param_string in parameter_list:
-        option = param_string.split()[0]
+        option = param_string.split()[0].upper()
         param_list = param_string.split()[1:]
         parameter_dict[option] = param_list
         
