@@ -12,7 +12,7 @@ import math
 #WMM_MAIN
 #===============================================================================================================
 def main ():
-    option_list=['P','F','A','U']
+    option_list=['A','F','P','U']
     parse_args()
 
     for option in parameter_dict:
@@ -31,11 +31,17 @@ def main ():
     if 'A' in parameter_dict:
         wmm_attitude()
 
+    print_output()
 
 #WMM_POINT
 #===============================================================================================================
 def wmm_point ():
     #DECLARE GLOBAL VARIABLES
+    global output_list
+    global lat
+    global lon
+    global alt
+    global date
     global F
     global Fdot
     global H
@@ -76,7 +82,7 @@ def wmm_point ():
     lat = [o[o.index('Latitude')+1][:-1], '',o[o.index('Latitude')+1][-1]]
     lon = [o[o.index('Longitude')+1][:-1], '',o[o.index('Longitude')+1][-1]]
     alt = [o[o.index('Altitude:')+1], '',' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
-    Date = [o[o.index('Date:')+1], '', '']
+    date = [o[o.index('Date:')+1], '', '']
     F = [float(o[o.index('F')+2]), float(o[o.index('F')+4]), o[o.index('F')+5]]
     Fdot = [float(o[o.index('Fdot')+2]), 0,o[o.index('Fdot')+3]]
     H = [float(o[o.index('H') + 2]), float(o[o.index('H') + 4]), o[o.index('H') + 5]]
@@ -91,21 +97,6 @@ def wmm_point ():
     Ddot = [float(o[o.index('Ddot')+2]), 0, o[o.index('Ddot')+3]]
     Incl = [float(o[o.index('Incl')+2]) + float(o[o.index('Incl')+4])/60, float(o[o.index('Incl')+8])/60, o[o.index('Incl')+3] + " " + o[o.index('Incl')+6][1]]
     Idot = [float(o[o.index('Idot')+2]), 0, o[o.index('Idot')+3]]
-
-    #PRINT OUTPUT WITH FORAMT UNALTERED IF --U OR ALTERED OTHERWISE
-    if "U" in parameter_dict:
-        print(''.join(output_list))
-    elif "P" in parameter_dict:
-        print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
-        print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],Date[0]))
-        print("\nMain Field\t\t\t\t\tSecular Change \nF\t= {0} +/- {1}\t{2}\t\tFdot\t= {3}\t{4}".format(F[0],F[1],F[2],Fdot[0],Fdot[2]))
-        print("H\t= {0} +/- {1}\t{2}\t\tHdot\t= {3}\t{4}".format(H[0],H[1],H[2],Hdot[0],Hdot[2]))
-        print("X\t= {0} +/- {1}\t{2}\t\tXdot\t= {3}\t{4}".format(X[0],X[1],X[2],Xdot[0],Xdot[2]))
-        print("Y\t= {0} +/- {1}\t{2}\t\tYdot\t= {3}\t{4}".format(Y[0],Y[1],Y[2],Ydot[0],Ydot[2]))
-        print("Z\t= {0} +/- {1}\t{2}\t\tZdot\t= {3}\t{4}".format(Z[0],Z[1],Z[2],Zdot[0],Zdot[2]))
-        print("Decl\t= {0} +/- {1}\t\t{2}\t\tDdot\t= {3}\t{4}".format(round(Decl[0],1),round(Decl[1],1),Decl[2],Ddot[0],Ddot[2]))
-        print("Incl\t= {0} +/- {1}\t\t{2}\t\tIdot\t= {3}\t{4} \n\nDone.\n".format(round(Incl[0],1),round(Incl[1],1),Incl[2],Idot[0],Idot[2]))
-
 
 #WMM_FILE
 #===============================================================================================================
@@ -131,6 +122,34 @@ def wmm_attitude (magnetometer_data,wmm_data):
     #sf + fe = se
     print("wmm_attitude")
 
+#PRINT_OUTPUT
+#===============================================================================================================
+def print_output ():
+    #PRINT OUTPUT WITH FORAMT UNALTERED IF --U OR ALTERED OTHERWISE
+    if "P" in parameter_dict:
+        print("P in parameter dict")
+        if "U" in parameter_dict:
+            print(''.join(output_list))
+        elif "A" in parameter_dict:
+            print("A in parameter dict")
+        else:
+            print("U and A not in parameter dict")
+            print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
+            print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
+            print("\nMain Field\t\t\t\t\tSecular Change \nF\t= {0} +/- {1}\t{2}\t\tFdot\t= {3}\t{4}".format(F[0],F[1],F[2],Fdot[0],Fdot[2]))
+            print("H\t= {0} +/- {1}\t{2}\t\tHdot\t= {3}\t{4}".format(H[0],H[1],H[2],Hdot[0],Hdot[2]))
+            print("X\t= {0} +/- {1}\t{2}\t\tXdot\t= {3}\t{4}".format(X[0],X[1],X[2],Xdot[0],Xdot[2]))
+            print("Y\t= {0} +/- {1}\t{2}\t\tYdot\t= {3}\t{4}".format(Y[0],Y[1],Y[2],Ydot[0],Ydot[2]))
+            print("Z\t= {0} +/- {1}\t{2}\t\tZdot\t= {3}\t{4}".format(Z[0],Z[1],Z[2],Zdot[0],Zdot[2]))
+            print("Decl\t= {0} +/- {1}\t\t{2}\t\tDdot\t= {3}\t{4}".format(round(Decl[0],1),round(Decl[1],1),Decl[2],Ddot[0],Ddot[2]))
+            print("Incl\t= {0} +/- {1}\t\t{2}\t\tIdot\t= {3}\t{4} \n\nDone.\n".format(round(Incl[0],1),round(Incl[1],1),Incl[2],Idot[0],Idot[2]))
+    elif "F" in parameter_dict:
+        if "U" in parameter_dict:
+            print(''.join(output_list))
+        elif "A" in parameter_dict:
+            print("A in parameter dict")
+        else:
+            print("F in parameter_dict")
 
 #PARSE_ARGS
 #===============================================================================================================
@@ -147,7 +166,6 @@ def parse_args ():
         option = param_string.split()[0].upper()
         param_list = param_string.split()[1:]
         parameter_dict[option] = param_list
-        
 
 #DONE
 #===============================================================================================================
