@@ -34,6 +34,54 @@ def main ():
 
     print_output()
 
+
+#GET_ARGS
+#===============================================================================================================
+def get_args ():
+    global parameter_dict
+    parameter_list = sys.argv
+    file = parameter_list.pop(0)
+
+    parameter_list = ' '.join(parameter_list).split("--")
+    parameter_list.pop(0)
+
+    parameter_dict = {}
+    for param_string in parameter_list:
+        option = param_string.split()[0].upper()
+        param_list = param_string.split()[1:]
+        parameter_dict[option] = param_list
+
+#PARSE_ARGS
+#===============================================================================================================
+def parse_args ():
+    if "P" in parameter_dict:
+        global lat
+        global lon
+        global alt
+        global date
+        
+        #VERIFY CORRECT NUMBER OF ARGUMENTS AND GET DATE, USING TODAYS DATE IF NOT PROVIDED
+        if len(parameter_dict['P']) != 4:
+            if len(parameter_dict['P']) == 3:
+                date = time.strftime("%m/%d/%Y")
+            else:
+                print("ERROR: incorrect number of arguments for specified option")
+                return
+        else:
+            date = parameter_dict['P'][3]
+
+        #GET POSITION
+        lat = parameter_dict['P'][0]
+        lon = parameter_dict['P'][1]
+        alt = parameter_dict['P'][2]
+        
+        if "A" in parameter_dict:
+            print("A in parameter dict")
+        
+    elif "F" in parameter_dict:
+        if "A" in parameter_dict:
+            print("A in parameter dict")
+
 #WMM_POINT
 #===============================================================================================================
 def wmm_point ():
@@ -100,7 +148,6 @@ def wmm_file ():
     #print(command_string)
     #subprocess.Popen(command_string,shell=True)
 
-
 #WMM_ATTITUDE
 #===============================================================================================================
 def wmm_attitude (magnetometer_data,wmm_data):
@@ -136,58 +183,6 @@ def print_output ():
             print("A in parameter dict")
         else:
             print("F in parameter_dict")
-
-#PARSE_ARGS
-#===============================================================================================================
-def parse_args ():
-    if "P" in parameter_dict:
-        global lat
-        global lon
-        global alt
-        global date
-        
-        #VERIFY CORRECT NUMBER OF ARGUMENTS AND GET DATE, USING TODAYS DATE IF NOT PROVIDED
-        if len(parameter_dict['P']) != 4:
-            if len(parameter_dict['P']) == 3:
-                date = time.strftime("%m/%d/%Y")
-            else:
-                print("ERROR: incorrect number of arguments for specified option")
-                return
-        else:
-            date = parameter_dict['P'][3]
-
-        #GET POSITION
-        lat = parameter_dict['P'][0]
-        lon = parameter_dict['P'][1]
-        alt = parameter_dict['P'][2]
-
-        print(lat)
-        print(lon)
-        print(alt)
-        print(date)
-        
-        if "A" in parameter_dict:
-            print("A in parameter dict")
-        
-    elif "F" in parameter_dict:
-        if "A" in parameter_dict:
-            print("A in parameter dict")
-            
-#GET_ARGS
-#===============================================================================================================
-def get_args ():
-    global parameter_dict
-    parameter_list = sys.argv
-    file = parameter_list.pop(0)
-
-    parameter_list = ' '.join(parameter_list).split("--")
-    parameter_list.pop(0)
-
-    parameter_dict = {}
-    for param_string in parameter_list:
-        option = param_string.split()[0].upper()
-        param_list = param_string.split()[1:]
-        parameter_dict[option] = param_list
 
 #DONE
 #===============================================================================================================
