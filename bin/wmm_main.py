@@ -35,6 +35,22 @@ def main ():
 #WMM_POINT
 #===============================================================================================================
 def wmm_point ():
+    #DECLARE GLOBAL VARIABLES
+    global F
+    global Fdot
+    global H
+    global Hdot
+    global X
+    global Xdot
+    global Y
+    global Ydot
+    global Z
+    global Zdot
+    global Decl
+    global Ddot
+    global Incl
+    global Idot
+    
     #VERIFY CORRECT NUMBER OF ARGUMENTS AND GET DATE, USING TODAYS DATE IF NOT PROVIDED
     if len(parameter_dict['P']) != 4:
         if len(parameter_dict['P']) == 3:
