@@ -14,12 +14,13 @@ import math
 def main ():
     option_list=['A','F','P','U']
     get_args()
-    parse_args()
 
     for option in parameter_dict:
         if option not in option_list:
             print("ERROR: invalid option")
-            return
+            quit()
+
+    parse_args()
 
     if 'P' in parameter_dict and 'F' not in parameter_dict:
         wmm_point()
@@ -66,7 +67,7 @@ def parse_args ():
                 date = time.strftime("%m/%d/%Y")
             else:
                 print("ERROR: incorrect number of arguments for specified option")
-                return
+                quit()
         else:
             date = parameter_dict['P'][3]
 
