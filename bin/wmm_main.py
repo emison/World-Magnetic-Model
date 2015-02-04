@@ -4,8 +4,6 @@ import subprocess
 import time
 import math
 
-#add functionality to export values from wmm_point for global use
-#make date input optional
 #add catch all solution for measurements parsing
 #add --V option to be verbose
 #make sure date given is in mm/dd/yyyy format
@@ -52,10 +50,11 @@ def get_args ():
         param_list = param_string.split()[1:]
         parameter_dict[option] = param_list
 
+
 #PARSE_ARGS
 #===============================================================================================================
 def parse_args ():
-    if "P" in parameter_dict:
+    if 'P' in parameter_dict:
         global lat
         global lon
         global alt
@@ -76,12 +75,13 @@ def parse_args ():
         lon = parameter_dict['P'][1]
         alt = parameter_dict['P'][2]
         
-        if "A" in parameter_dict:
+        if 'A' in parameter_dict:
             print("A in parameter dict")
         
-    elif "F" in parameter_dict:
-        if "A" in parameter_dict:
+    elif 'F' in parameter_dict:
+        if 'A' in parameter_dict:
             print("A in parameter dict")
+
 
 #WMM_POINT
 #===============================================================================================================
@@ -133,6 +133,7 @@ def wmm_point ():
     Incl = [float(o[o.index('Incl')+2]) + float(o[o.index('Incl')+4])/60, float(o[o.index('Incl')+8])/60, o[o.index('Incl')+3] + " " + o[o.index('Incl')+6][1]]
     Idot = [float(o[o.index('Idot')+2]), 0, o[o.index('Idot')+3]]
 
+
 #WMM_FILE
 #===============================================================================================================
 def wmm_file ():
@@ -149,6 +150,7 @@ def wmm_file ():
     #print(command_string)
     #subprocess.Popen(command_string,shell=True)
 
+
 #WMM_ATTITUDE
 #===============================================================================================================
 def wmm_attitude (magnetometer_data,wmm_data):
@@ -156,18 +158,17 @@ def wmm_attitude (magnetometer_data,wmm_data):
     #sf + fe = se
     print("wmm_attitude")
 
+
 #PRINT_OUTPUT
 #===============================================================================================================
 def print_output ():
     #PRINT OUTPUT WITH FORAMT UNALTERED IF --U OR ALTERED OTHERWISE
-    if "P" in parameter_dict:
-        print("P in parameter dict")
-        if "U" in parameter_dict:
+    if 'P' in parameter_dict:
+        if 'U' in parameter_dict:
             print(''.join(output_list))
-        elif "A" in parameter_dict:
+        elif 'A' in parameter_dict:
             print("A in parameter dict")
         else:
-            print("U and A not in parameter dict")
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
             print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
             print("\nMain Field\t\t\t\t\tSecular Change \nF\t= {0} +/- {1}\t{2}\t\tFdot\t= {3}\t{4}".format(F[0],F[1],F[2],Fdot[0],Fdot[2]))
@@ -177,13 +178,14 @@ def print_output ():
             print("Z\t= {0} +/- {1}\t{2}\t\tZdot\t= {3}\t{4}".format(Z[0],Z[1],Z[2],Zdot[0],Zdot[2]))
             print("Decl\t= {0} +/- {1}\t\t{2}\t\tDdot\t= {3}\t{4}".format(round(Decl[0],1),round(Decl[1],1),Decl[2],Ddot[0],Ddot[2]))
             print("Incl\t= {0} +/- {1}\t\t{2}\t\tIdot\t= {3}\t{4} \n\nDone.\n".format(round(Incl[0],1),round(Incl[1],1),Incl[2],Idot[0],Idot[2]))
-    elif "F" in parameter_dict:
-        if "U" in parameter_dict:
+    elif 'F' in parameter_dict:
+        if 'U' in parameter_dict:
             print(''.join(output_list))
-        elif "A" in parameter_dict:
+        elif 'A' in parameter_dict:
             print("A in parameter dict")
         else:
             print("F in parameter_dict")
+
 
 #DONE
 #===============================================================================================================
