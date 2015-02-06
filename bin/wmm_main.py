@@ -76,7 +76,16 @@ def parse_args ():
         alt = parameter_dict['P'][2]
         
         if 'A' in parameter_dict:
-            print("A in parameter dict")
+            global X_S
+            global Y_S
+            global Z_S
+
+            X_S = parameter_dict['A'][0]
+            Y_S = parameter_dict['A'][1]
+            Z_S = parameter_dict['A'][2]
+            print(X_S)
+            print(Y_S)
+            print(Z_S)
         
     elif 'F' in parameter_dict:
         if 'A' in parameter_dict:
@@ -153,7 +162,7 @@ def wmm_file ():
 
 #WMM_ATTITUDE
 #===============================================================================================================
-def wmm_attitude (magnetometer_data,wmm_data):
+def wmm_attitude ():
     #may be able to use common coordinate system for magnetometer and data (x,y,z)
     #sf + fe = se
     print("wmm_attitude")
