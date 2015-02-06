@@ -60,20 +60,22 @@ def parse_args ():
         global alt
         global date
         
-        #VERIFY CORRECT NUMBER OF ARGUMENTS AND GET DATE, USING TODAYS DATE IF NOT PROVIDED
+        #VERIFY CORRECT NUMBER OF ARGUMENTS
         if len(parameter_dict['P']) != 4:
+            #USE TODAYS DATE IF NOT PROVIDED
             if len(parameter_dict['P']) == 3:
                 date = time.strftime("%m/%d/%Y")
+                lat = parameter_dict['P'][0]
+                lon = parameter_dict['P'][1]
+                alt = parameter_dict['P'][2]
             else:
                 print("ERROR: incorrect number of arguments for specified option")
                 quit()
         else:
             date = parameter_dict['P'][3]
-
-        #GET POSITION
-        lat = parameter_dict['P'][0]
-        lon = parameter_dict['P'][1]
-        alt = parameter_dict['P'][2]
+            lat = parameter_dict['P'][0]
+            lon = parameter_dict['P'][1]
+            alt = parameter_dict['P'][2]
         
         if 'A' in parameter_dict:
             global X_S
@@ -83,11 +85,19 @@ def parse_args ():
             X_S = parameter_dict['A'][0]
             Y_S = parameter_dict['A'][1]
             Z_S = parameter_dict['A'][2]
-            print(X_S)
-            print(Y_S)
-            print(Z_S)
         
     elif 'F' in parameter_dict:
+        global in_file
+        global out_file
+
+        #VERIFY CORRECT NUMBER OF ARGUMENTS
+        if len(parameter_dict['F']) != 2:
+            print("ERROR: incorrect number of arguments for specified option")
+            quit()
+        else:
+            in_file = parameter_dict['F'][0]
+            out_file = parameter_dict['F'][1]
+
         if 'A' in parameter_dict:
             print("A in parameter dict")
 
@@ -146,16 +156,8 @@ def wmm_point ():
 #WMM_FILE
 #===============================================================================================================
 def wmm_file ():
-    if len(parameter_dict['F']) != 2: #verify data was provided
-        print("ERROR: incorrect number of arguments for specified option")
-        return
-    in_file = parameter_dict['F'][0]
-    out_file = parameter_dict['F'][1]
-    print("Input: file")
-    print("Input file: " + parameter_dict['F'][0])
-    print("Output file: " + parameter_dict['F'][1])
-
-    command_string = "./wmm_file.exe " + in_file + " " + out_file
+    print("wmm_file")
+    #command_string = "./wmm_file.exe << EOF\n{0}\n{1}\nEOF\n".format(in_file, out_file)
     #print(command_string)
     #subprocess.Popen(command_string,shell=True)
 
@@ -193,7 +195,7 @@ def print_output ():
         elif 'A' in parameter_dict:
             print("A in parameter dict")
         else:
-            print("F in parameter_dict")
+            print("Input Method: File\nInput File: {0}\nOutput File: {1}".format(parameter_dict['F'][0],parameter_dict['F'][1]))
 
 
 #DONE
