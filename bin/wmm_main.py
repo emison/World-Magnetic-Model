@@ -2,7 +2,7 @@
 import sys
 import subprocess
 import time
-import math
+import numpy
 
 #add catch all solution for measurements parsing
 #add --V option to be verbose
@@ -82,9 +82,9 @@ def parse_args ():
             global Y_S
             global Z_S
 
-            X_S = parameter_dict['A'][0]
-            Y_S = parameter_dict['A'][1]
-            Z_S = parameter_dict['A'][2]
+            X_S = [parameter_dict['A'][0], 0, 'nT']
+            Y_S = [parameter_dict['A'][1], 0, 'nT']
+            Z_S = [parameter_dict['A'][2], 0, 'nT']
         
     elif 'F' in parameter_dict:
         global in_file
@@ -133,12 +133,12 @@ def wmm_point ():
 
     #PARSE OUTPUT AND STORE IN [VALUE, ERROR, UNITS] FORM
     o = ''.join(output_list[output_list.index(' Results For \n'):]).split()
-    lat = [o[o.index('Latitude')+1][:-1], '',o[o.index('Latitude')+1][-1]]
-    lon = [o[o.index('Longitude')+1][:-1], '',o[o.index('Longitude')+1][-1]]
-    alt = [o[o.index('Altitude:')+1], '',' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
-    date = [o[o.index('Date:')+1], '', '']
+    lat = [o[o.index('Latitude')+1][:-1], 0, o[o.index('Latitude')+1][-1]]
+    lon = [o[o.index('Longitude')+1][:-1], 0, o[o.index('Longitude')+1][-1]]
+    alt = [o[o.index('Altitude:')+1], 0, ' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
+    date = [o[o.index('Date:')+1], 0, '']
     F = [float(o[o.index('F')+2]), float(o[o.index('F')+4]), o[o.index('F')+5]]
-    Fdot = [float(o[o.index('Fdot')+2]), 0,o[o.index('Fdot')+3]]
+    Fdot = [float(o[o.index('Fdot')+2]), 0, o[o.index('Fdot')+3]]
     H = [float(o[o.index('H') + 2]), float(o[o.index('H') + 4]), o[o.index('H') + 5]]
     Hdot = [float(o[o.index('Hdot')+2]), 0, o[o.index('Hdot')+3]]
     X = [float(o[o.index('X')+2]), float(o[o.index('X')+4]), o[o.index('X')+5]]
@@ -168,7 +168,12 @@ def wmm_attitude ():
     #may be able to use common coordinate system for magnetometer and data (x,y,z)
     #sf + fe = se
     print("wmm_attitude")
-
+    """
+    B = numpy.array([X[0],Y[0],Z[0]])
+    B_S = numpy.array([X_S,Y_S,Z_S])
+    #R = numpy.subtract(Field_Satellite, Field_earth)
+    #S = numpy
+    """
 
 #PRINT_OUTPUT
 #===============================================================================================================
