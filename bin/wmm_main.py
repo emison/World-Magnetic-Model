@@ -82,9 +82,14 @@ def parse_args ():
             global Y_S
             global Z_S
 
-            X_S = [parameter_dict['A'][0], 0, 'nT']
-            Y_S = [parameter_dict['A'][1], 0, 'nT']
-            Z_S = [parameter_dict['A'][2], 0, 'nT']
+            #VERIFY CORRECT NUMBER OF ARGUMENTS
+            if len(parameter_dict['A']) != 3:
+                print("ERROR: incorrect number of arguments for specified option")
+                quit()
+            else:
+                X_S = [float(parameter_dict['A'][0]), 0, 'nT']
+                Y_S = [float(parameter_dict['A'][1]), 0, 'nT']
+                Z_S = [float(parameter_dict['A'][2]), 0, 'nT']
         
     elif 'F' in parameter_dict:
         global in_file
@@ -133,10 +138,10 @@ def wmm_point ():
 
     #PARSE OUTPUT AND STORE IN [VALUE, ERROR, UNITS] FORM
     o = ''.join(output_list[output_list.index(' Results For \n'):]).split()
-    lat = [o[o.index('Latitude')+1][:-1], 0, o[o.index('Latitude')+1][-1]]
-    lon = [o[o.index('Longitude')+1][:-1], 0, o[o.index('Longitude')+1][-1]]
-    alt = [o[o.index('Altitude:')+1], 0, ' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
-    date = [o[o.index('Date:')+1], 0, '']
+    lat = [float(o[o.index('Latitude')+1][:-1]), 0, o[o.index('Latitude')+1][-1]]
+    lon = [float(o[o.index('Longitude')+1][:-1]), 0, o[o.index('Longitude')+1][-1]]
+    alt = [float(o[o.index('Altitude:')+1]), 0, ' '.join(o[o.index('Altitude:')+2:o.index('Date:')])]
+    date = [float(o[o.index('Date:')+1]), 0, '']
     F = [float(o[o.index('F')+2]), float(o[o.index('F')+4]), o[o.index('F')+5]]
     Fdot = [float(o[o.index('Fdot')+2]), 0, o[o.index('Fdot')+3]]
     H = [float(o[o.index('H') + 2]), float(o[o.index('H') + 4]), o[o.index('H') + 5]]
@@ -165,15 +170,32 @@ def wmm_file ():
 #WMM_ATTITUDE
 #===============================================================================================================
 def wmm_attitude ():
-    #may be able to use common coordinate system for magnetometer and data (x,y,z)
-    #sf + fe = se
-    print("wmm_attitude")
-    """
+    #DECLARE GLOBAL VARIABLES
+    global i_prime
+    global j_prime
+    global k_prime
+    
+    #GENERATE AXIS VECTORS FOR EARTH FRAME
+    i = numpy.array([1, 0, 0])
+    j = numpy.array([0, 1, 0])
+    k = numpy.array([0, 0, 1])
+
+    #MAKE MODEL AND MEASUREMENT FIELD VALUES INTO VECTORS
     B = numpy.array([X[0],Y[0],Z[0]])
-    B_S = numpy.array([X_S,Y_S,Z_S])
-    #R = numpy.subtract(Field_Satellite, Field_earth)
-    #S = numpy
-    """
+    B_S = numpy.array([X_S[0],Y_S[0],Z_S[0]])
+
+    #UNITIZE FIELD VECTORS (IGNORE VECTORS MAY DIFFER IN LENGTH)
+    b = B/numpy.sqrt(B.dot(B))
+    b_s = B_S/numpy.sqrt(B_S.dot(B_S))
+    
+    #DETERMINE DIFFERENCE VECTOR
+    R = b_s - b
+
+    #ROTATE SPACECRAFT COORDINATE SYSTEM
+    i_prime = (i + R)/numpy.sqrt((i + R).dot(i + R))
+    j_prime = (j + R)/numpy.sqrt((j + R).dot(j + R))
+    k_prime = (k + R)/numpy.sqrt((k + R).dot(k + R))
+
 
 #PRINT_OUTPUT
 #===============================================================================================================
@@ -183,7 +205,7 @@ def print_output ():
         if 'U' in parameter_dict:
             print(''.join(output_list))
         elif 'A' in parameter_dict:
-            print("A in parameter dict")
+            print("i' = {0}\nj' = {1}\nk' = {2}".format(i_prime, j_prime, k_prime))
         else:
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
             print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
