@@ -3,6 +3,7 @@ import sys
 import subprocess
 import time
 import numpy
+import math
 
 #add catch all solution for measurements parsing
 #add --V option to be verbose
@@ -171,30 +172,66 @@ def wmm_file ():
 #===============================================================================================================
 def wmm_attitude ():
     #DECLARE GLOBAL VARIABLES
-    global i_prime
-    global j_prime
-    global k_prime
+    global I_S
+    global J_S
+    global K_S
     
     #GENERATE AXIS VECTORS FOR EARTH FRAME
-    i = numpy.array([1, 0, 0])
-    j = numpy.array([0, 1, 0])
-    k = numpy.array([0, 0, 1])
+    I = numpy.array([1, 0, 0])
+    J = numpy.array([0, 1, 0])
+    K = numpy.array([0, 0, 1])
 
     #MAKE MODEL AND MEASUREMENT FIELD VALUES INTO VECTORS
     B = numpy.array([X[0],Y[0],Z[0]])
     B_S = numpy.array([X_S[0],Y_S[0],Z_S[0]])
 
-    #UNITIZE FIELD VECTORS (IGNORE VECTORS MAY DIFFER IN LENGTH)
-    b = B/numpy.sqrt(B.dot(B))
-    b_s = B_S/numpy.sqrt(B_S.dot(B_S))
+    #CONVERT TO SPHERICAL COORDINATES
+    i = cartesian_to_spherical(I)
+    j = cartesian_to_spherical(J)
+    k = cartesian_to_spherical(K)
     
-    #DETERMINE DIFFERENCE VECTOR
-    R = b_s - b
+    b = cartesian_to_spherical(B)
+    b_s = cartesian_to_spherical(B_S)
 
+    #DETERMINE DIFFERENCE VECTOR IGNORING MAGNITUDE
+    r = b_s - b
+    r[0] = 0
+    
     #ROTATE SPACECRAFT COORDINATE SYSTEM
-    i_prime = (i + R)/numpy.sqrt((i + R).dot(i + R))
-    j_prime = (j + R)/numpy.sqrt((j + R).dot(j + R))
-    k_prime = (k + R)/numpy.sqrt((k + R).dot(k + R))
+    i_s = i + r
+    j_s = j + r
+    k_s = k + r
+
+    #CONVERT BACK TO CARTESIAN COORDINATES
+    I_S = spherical_to_cartesian(i_s)
+    J_S = spherical_to_cartesian(j_s)
+    K_S = spherical_to_cartesian(k_s)
+
+
+#CARTESIAN_TO_SPHERICAL
+#---------------------------------------------------------------------------------------------------------------
+def cartesian_to_spherical (C):
+    r = numpy.sqrt(C.dot(C))
+    if C[0] == 0:
+        if C[1] == 0:
+            theta = 0
+        else:
+            theta = math.pi/2
+    else:
+        theta = math.atan(C[1]/C[0])
+    phi = math.acos(C[2]/r)
+    s = numpy.array([r, theta, phi])
+    return s
+
+
+#SPHERICAL_TO_CARTESIAN
+#---------------------------------------------------------------------------------------------------------------
+def spherical_to_cartesian (s):
+    x = s[0]*math.sin(s[2])*math.cos(s[1])
+    y = s[0]*math.sin(s[2])*math.sin(s[1])
+    z = s[0]*math.cos(s[2])
+    c = numpy.array([x, y, z])
+    return c
 
 
 #PRINT_OUTPUT
@@ -205,7 +242,7 @@ def print_output ():
         if 'U' in parameter_dict:
             print(''.join(output_list))
         elif 'A' in parameter_dict:
-            print("i' = {0}\nj' = {1}\nk' = {2}".format(i_prime, j_prime, k_prime))
+            print("i' = {0}\nj' = {1}\nk' = {2}".format(I_S, J_S, K_S))
         else:
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
             print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
