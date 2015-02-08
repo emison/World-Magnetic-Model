@@ -30,7 +30,11 @@ def main ():
         return
 
     if 'A' in parameter_dict:
-        wmm_attitude()
+        if 'U' in parameter_dict:
+            print("ERROR: cannot specify unformatted output (U) wtih attitude input (A)")
+            quit()
+        else:
+            wmm_attitude()
 
     print_output()
 
@@ -242,7 +246,10 @@ def print_output ():
         if 'U' in parameter_dict:
             print(''.join(output_list))
         elif 'A' in parameter_dict:
-            print("i' = {0}\nj' = {1}\nk' = {2}".format(I_S, J_S, K_S))
+            print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
+            print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
+            print("\nDirection of Satellite Relative to Earth Coordinate System")
+            print("\n\t    North\tEast\t    Down\nX'\t= {0}\nY'\t= {1}\nZ'\t= {2}".format(I_S, J_S, K_S))
         else:
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
             print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
