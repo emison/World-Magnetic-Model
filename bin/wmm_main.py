@@ -247,9 +247,11 @@ def print_output ():
             print(''.join(output_list))
         elif 'A' in parameter_dict:
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
-            print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
-            print("\nDirection of Satellite Relative to Earth Coordinate System")
-            print("\n\t    North\tEast\t    Down\nX'\t= {0}\nY'\t= {1}\nZ'\t= {2}".format(I_S, J_S, K_S))
+            print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4}".format(lon[0],lon[2],alt[0],alt[2],date[0]))
+            print("\nMagnetic Field Measured Relative to Satellite")
+            print("\t    X'\t\tY'\t    Z'\nField\t= {0}".format(numpy.array([X_S[0],Y_S[0],Z_S[0]])))
+            print("\n\nDirection of Satellite Relative to Earth Coordinate System")
+            print("\t    North\tEast\t    Down\nX'\t= {0}\nY'\t= {1}\nZ'\t= {2}\n\nDone.\n".format(I_S,J_S,K_S))
         else:
             print("\nResults For \n\nInput Method:\tSingle Point \nLatitude:\t{0}\t{1}".format(lat[0],lat[2]))
             print("Longitude:\t{0}\t{1} \nAltitude:\t{2}\t{3}\nDate:\t\t{4} \n".format(lon[0],lon[2],alt[0],alt[2],date[0]))
